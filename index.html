@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex AI Assistant</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        #chat-container { width: 400px; height: 600px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+        #header { background: #007bff; color: white; padding: 20px; text-align: center; font-weight: bold; font-size: 1.2rem; }
+        #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 10px; max-width: 80%; line-height: 1.4; }
+        .user { background: #007bff; color: white; align-self: flex-end; }
+        .bot { background: #e9ecef; color: #333; align-self: flex-start; }
+        #input-area { display: flex; padding: 20px; border-top: 1px solid #eee; }
+        #user-input { flex: 1; border: 1px solid #ddd; border-radius: 5px; padding: 10px; outline: none; }
+        #send-btn { background: #007bff; color: white; border: none; padding: 10px 15px; margin-left: 10px; border-radius: 5px; cursor: pointer; }
+        #send-btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <div id="header">Apex AI Support</div>
+    <div id="messages"></div>
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="Ask me anything...">
+        <button id="send-btn">Send</button>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://your-bot.up.railway.app/ask"; // REPLACE THIS
+    const ACCESS_TOKEN = "ApexAgency2024!"; // REPLACE THIS
+
+    const messagesContainer = document.getElementById('messages');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    function addMessage(text, sender) {
+        const div = document.createElement('div');
+        div.classList.add('message', sender);
+        div.innerText = text;
+        messagesContainer.appendChild(div);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const question = userInput.value.trim();
+        if (!question) return;
+
+        addMessage(question, 'user');
+        userInput.value = '';
+
+        try {
+            // Adding token to the URL as a query parameter per your Python script
+            const response = await fetch(`${API_URL}?question=${encodeURIComponent(question)}&token=${ACCESS_TOKEN}`, {
+                method: 'POST',
+                headers: { 'accept': 'application/json' }
+            });
+
+            const data = await response.json();
+            if (data.answer) {
+                addMessage(data.answer, 'bot');
+            } else {
+                addMessage("Error: Could not reach the AI brain.", 'bot');
+            }
+        } catch (error) {
+            addMessage("Error: Connection failed.", 'bot');
+        }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+</script>
+
+</body>
+</html>
