@@ -45,11 +45,11 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
+    // This must stay as ONE single, unbroken function
     async function sendMessage() {
         const question = userInput.value.trim();
         if (!question) return;
 
-        // UI state: Disable inputs and show user message
         addMessage(question, 'user');
         userInput.value = '';
         userInput.disabled = true;
@@ -65,26 +65,23 @@
                 })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Server Error ${response.status}`);
+            const data = await response.json();
+            
+            if (response.ok) {
+                addMessage(data.answer || "No response.", 'bot');
+            } else {
+                addMessage("Error: " + (data.error || "Server issue"), 'bot');
             }
 
-            const data = await response.json();
-            addMessage(data.answer || "No response received.", 'bot');
-
         } catch (error) {
-            console.error("Fetch error:", error);
-            addMessage(`Error: ${error.message}`, 'bot');
+            addMessage("Error: Could not connect to the backend.", 'bot');
         } finally {
-            // Re-enable inputs
             userInput.disabled = false;
             sendBtn.disabled = false;
             userInput.focus();
         }
     }
 
-    // Event Listeners
     sendBtn.onclick = sendMessage;
     userInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
 </script>
