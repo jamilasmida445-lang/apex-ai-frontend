@@ -56,10 +56,15 @@
 
         try {
             const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question, token: ACCESS_TOKEN })
-            });
+    method: 'POST',
+    headers: { 
+        'Content-Type': 'application/json' // MUST HAVE THIS
+    },
+    body: JSON.stringify({ 
+        question: question, 
+        token: "ApexAgency2024!" // MUST MATCH PYTHON EXACTLY
+    })
+});
 
             const data = await response.json();
             addMessage(data.answer || "Error: " + data.error, 'bot');
