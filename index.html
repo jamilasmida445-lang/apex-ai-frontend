@@ -45,29 +45,33 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    async function sendMessage() {
+    // Add 'async' right here!
+async function sendMessage() {
     const question = userInput.value.trim();
     if (!question) return;
 
-    addMessage(question, 'user');
-    userInput.value = '';
+    // ... your addMessage logic ...
 
     try {
+        // Now 'await' is allowed because the function is 'async'
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json' // This tells Flask it's JSON
+                'Content-Type': 'application/json' 
             },
             body: JSON.stringify({ 
                 question: question, 
-                token: "ApexAgency2024!" // This MUST match the string in Python
+                token: "ApexAgency2024!" 
             })
         });
 
-        if (response.status === 403) {
-            addMessage("Error: Secret token mismatch (403).", 'bot');
-            return;
-        }
+        const data = await response.json();
+        addMessage(data.answer, 'bot');
+
+    } catch (error) {
+        addMessage("Error: Connection failed.", 'bot');
+    }
+}
 
         const data = await response.json();
         addMessage(data.answer || "No response.", 'bot');
