@@ -46,25 +46,35 @@
     }
 
     async function sendMessage() {
-        const question = userInput.value.trim();
-        if (!question) return;
+    const question = userInput.value.trim();
+    if (!question) return;
 
-        addMessage(question, 'user');
-        userInput.value = '';
-        userInput.disabled = true;
-        sendBtn.disabled = true;
+    addMessage(question, 'user');
+    userInput.value = '';
 
-        try {
-            const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 
-        'Content-Type': 'application/json' // MUST HAVE THIS
-    },
-    body: JSON.stringify({ 
-        question: question, 
-        token: "ApexAgency2024!" // MUST MATCH PYTHON EXACTLY
-    })
-});
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' // This tells Flask it's JSON
+            },
+            body: JSON.stringify({ 
+                question: question, 
+                token: "ApexAgency2024!" // This MUST match the string in Python
+            })
+        });
+
+        if (response.status === 403) {
+            addMessage("Error: Secret token mismatch (403).", 'bot');
+            return;
+        }
+
+        const data = await response.json();
+        addMessage(data.answer || "No response.", 'bot');
+    } catch (error) {
+        addMessage("Error: Connection failed.", 'bot');
+    }
+}
 
             const data = await response.json();
             addMessage(data.answer || "Error: " + data.error, 'bot');
