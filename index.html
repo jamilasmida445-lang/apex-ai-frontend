@@ -45,7 +45,6 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    // This must stay as ONE single, unbroken function
     async function sendMessage() {
         const question = userInput.value.trim();
         if (!question) return;
@@ -60,7 +59,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    question: question, 
+                    text: question, 
                     token: ACCESS_TOKEN 
                 })
             });
@@ -68,7 +67,8 @@
             const data = await response.json();
             
             if (response.ok) {
-                addMessage(data.answer || "No response.", 'bot');
+                // FIXED: Changed data.answer to data.response to match the backend return payload
+                addMessage(data.response || data.answer || "No response.", 'bot');
             } else {
                 addMessage("Error: " + (data.error || "Server issue"), 'bot');
             }
