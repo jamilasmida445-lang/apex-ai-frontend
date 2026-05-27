@@ -58,16 +58,15 @@
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    text: question, 
-                    token: ACCESS_TOKEN 
+                body: JSON.stringify({
+                    text: question,
+                    token: ACCESS_TOKEN
                 })
             });
 
             const data = await response.json();
             
             if (response.ok) {
-                // FIXED: Changed data.answer to data.response to match the backend return payload
                 addMessage(data.response || data.answer || "No response.", 'bot');
             } else {
                 addMessage("Error: " + (data.error || "Server issue"), 'bot');
